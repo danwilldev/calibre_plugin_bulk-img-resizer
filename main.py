@@ -78,7 +78,6 @@ class BulkImgReducer(Tool):
         images = []
         for name, media_type in container.mime_map.items():
             if media_type in self.RASTER_IMAGES:
-                # print('files: ' + str(name) + ' mime types:' + str(media_type))
                 images.append(name)
 
         return images
