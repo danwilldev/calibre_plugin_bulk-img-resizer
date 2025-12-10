@@ -13,7 +13,7 @@ class BulkImgReducerPlugin(EditBookToolPlugin):
 
     name = 'Bulk img resizer'
     version = version_tuple
-    author = 'Artur Kupiec'
+    author = 'Artur Kupiec, Dan Williams'
     supported_platforms = ['windows', 'osx', 'linux']
     description = 'Resize all images and keep them under specified resolution'
     minimum_calibre_version = (7, 0, 0)

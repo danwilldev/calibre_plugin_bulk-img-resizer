@@ -6,9 +6,11 @@ from qt.core import QApplication, QDialog, QVBoxLayout, QLabel, QLineEdit, QComb
 class ConfigDialog(QDialog):
     def __init__(self):
         super().__init__()
-        self.max_resolution = 1080
-        self.quality = 85
-        self.encoding_type = 'JPEG'
+        super().__init__()
+        self.max_width = 480
+        self.max_height = 800
+        self.quality = 100
+        self.encoding_type = 'BMP'
 
         self.__encodingType = None
         self.__encodingInfoLabel = None
@@ -35,12 +37,19 @@ class ConfigDialog(QDialog):
         layout.addStretch(1)
 
     def _resolution_section(self, layout):
-        label1 = QLabel('Please indicate the maximum resolution for images (applied to the shorter side):')
+        label1 = QLabel('Please indicate the maximum **width** for images:')
         self.input1 = QLineEdit()
-        self.input1.setValidator(QIntValidator(500, 4000))
-        self.input1.setText(str(self.max_resolution))
+        self.input1.setValidator(QIntValidator(10, 5000))
+        self.input1.setText(str(self.max_width))
         layout.addWidget(label1)
         layout.addWidget(self.input1)
+
+        label_h = QLabel('Please indicate the maximum **height** for images:')
+        self.input_h = QLineEdit()
+        self.input_h.setValidator(QIntValidator(10, 5000))
+        self.input_h.setText(str(self.max_height))
+        layout.addWidget(label_h)
+        layout.addWidget(self.input_h)
 
     def _quality_section(self, layout):
         label2 = QLabel('Please indicate the quality for webp codec conversion (it is ok to keep it at 100%):')
@@ -57,16 +66,18 @@ class ConfigDialog(QDialog):
         tooltip_label.setPixmap(icon.pixmap(16, 16))
         tooltip_label.setToolTip('PNG: compression is applied by reducing bitrate of colors\n'
                                  'JPEG: compression is based on human visual perception\n'
-                                 'WebP: compression is based on predictive & entropy coding')
+                                 'WebP: compression is based on predictive & entropy coding\n'
+                                 'BMP: compression is ignored')
         h_box_label.addWidget(QLabel("Pick encoding type:"))
         h_box_label.addWidget(tooltip_label)
         h_box_label.setAlignment(Qt.AlignLeft)
 
         self.__encodingType = QComboBox(self)
-        self.__encodingType.addItem('Keep current')
+        self.__encodingType.addItem('BMP')
         self.__encodingType.addItem('PNG')
         self.__encodingType.addItem('JPEG')
         self.__encodingType.addItem('WebP')
+        self.__encodingType.addItem('Keep current')
         self.__encodingType.currentIndexChanged.connect(self.type_changed)
         self.__encodingInfoLabel = QLabel(self)
         self.__encodingInfoLabel.setStyleSheet('border: 2px solid red; padding: 8px;')
@@ -100,7 +111,8 @@ class ConfigDialog(QDialog):
             self.__encodingInfoLabel.hide()
 
     def submit(self):
-        self.max_resolution = int(self.input1.text())
+        self.max_width = int(self.input1.text())
+        self.max_height = int(self.input_h.text())
         self.quality = int(self.input2.text())
         self.encoding_type = self.__encodingType.currentText()
         self.accept()

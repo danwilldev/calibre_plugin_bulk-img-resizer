@@ -52,7 +52,7 @@ class BulkImgReducer(Tool):
         if dialog.exec_() != ConfigDialog.Accepted:
             return
 
-        self.config = dialog.max_resolution, dialog.quality, dialog.encoding_type
+        self.config = dialog.max_width, dialog.max_height, dialog.quality, dialog.encoding_type
         print('CONFIG', self.config)
 
         self.boss.commit_all_editors_to_container()
@@ -93,14 +93,15 @@ class BulkImgReducer(Tool):
 
     def do_one(self):
         images, all_images, progress, container = self.job_data
-        max_resolution, quality, encoding_type = self.config
+        max_width, max_height, quality, encoding_type = self.config
+
         if len(images) == 0 or progress.wasCanceled():
             self.pd_timer.stop()
             self.do_end()
             return
         name = images.pop()
         try:
-            new_image = compress_image(container.parsed(name), max_resolution, quality, encoding_type)
+            new_image = compress_image(container.parsed(name), max_width, max_height, quality, encoding_type)
             container.replace(name, new_image)
         except Exception:
             import traceback
@@ -112,7 +113,7 @@ class BulkImgReducer(Tool):
         progress.setValue(index)
 
     def do_end(self):
-        _, _, encoding_type = self.config
+        _, _, _, encoding_type = self.config
         _, all_images, progress, container = self.job_data
 
         progress.setWindowTitle('Renaming files...')
@@ -124,6 +125,8 @@ class BulkImgReducer(Tool):
                 value = replace_extension(name, '.jpg')
             elif encoding_type == 'PNG':
                 value = replace_extension(name, '.png')
+            elif encoding_type == 'BMP':
+                value = replace_extension(name, '.bmp')
             else:
                 break
 
