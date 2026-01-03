@@ -1,14 +1,15 @@
 from qt.core import QApplication, QDialog, QVBoxLayout, QLabel, QLineEdit, QComboBox, QPushButton, QIntValidator, QIcon, \
-    Qt, \
-    QHBoxLayout
+    Qt, QHBoxLayout, QCheckBox
 
 
 class ConfigDialog(QDialog):
     def __init__(self):
         super().__init__()
-        super().__init__()
+        self.allow_below_min = None
         self.max_width = 480
         self.max_height = 800
+        self.min_width = 480
+        self.min_height = 800
         self.quality = 100
         self.encoding_type = 'BMP'
 
@@ -50,6 +51,24 @@ class ConfigDialog(QDialog):
         self.input_h.setText(str(self.max_height))
         layout.addWidget(label_h)
         layout.addWidget(self.input_h)
+
+        label_min_w = QLabel('Please indicate the minimum **width** for images:')
+        self.input_min_w = QLineEdit()
+        self.input_min_w.setValidator(QIntValidator(10, 5000))
+        self.input_min_w.setText(str(self.min_width))
+        layout.addWidget(label_min_w)
+        layout.addWidget(self.input_min_w)
+
+        label_min_h = QLabel('Please indicate the minimum **height** for images:')
+        self.input_min_h = QLineEdit()
+        self.input_min_h.setValidator(QIntValidator(10, 5000))
+        self.input_min_h.setText(str(self.min_height))
+        layout.addWidget(label_min_h)
+        layout.addWidget(self.input_min_h)
+
+        self.allow_below_min_checkbox = QCheckBox("Allow images below minimum dimensions to be converted without resizing")
+        self.allow_below_min_checkbox.setChecked(True)
+        layout.addWidget(self.allow_below_min_checkbox)
 
     def _quality_section(self, layout):
         label2 = QLabel('Please indicate the quality for webp codec conversion (it is ok to keep it at 100%):')
@@ -113,6 +132,9 @@ class ConfigDialog(QDialog):
     def submit(self):
         self.max_width = int(self.input1.text())
         self.max_height = int(self.input_h.text())
+        self.min_width = int(self.input_min_w.text())
+        self.min_height = int(self.input_min_h.text())
         self.quality = int(self.input2.text())
         self.encoding_type = self.__encodingType.currentText()
+        self.allow_below_min = self.allow_below_min_checkbox.isChecked()
         self.accept()
